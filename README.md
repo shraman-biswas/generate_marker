@@ -1,7 +1,7 @@
 Generate Marker
 ===============
 
-Generates markers as per the iMeche Unamnned Aircraft Systems (UAS) Challenege specifications.  
+Generates markers as per the iMeche Unamnned Aircraft Systems (UAS) Challenge specifications.  
 Also generates rotated versions of the markers with simple motion blurring.  
 Marker alphanumeric code, rotation angles, and motion blur parameters are adjustable.  
 iMeche UAS Challenge link: https://www.imeche.org/get-involved/young-members-network/auasc  
