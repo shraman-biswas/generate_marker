@@ -67,10 +67,12 @@ def create_marker():
 def rotate_marker(img):
 	global rotx, roty, rotz
 	h, w, d = img.shape
+
 	# convert angles from degrees to radians
 	rotx = rotx * np.pi / 180.0
 	roty = roty * np.pi / 180.0
 	rotz = rotz * np.pi / 180.0
+
 	# calculate cosines and sines of rotation angles
 	cx = np.cos(rotx)
 	sx = np.sin(rotx)
@@ -78,12 +80,14 @@ def rotate_marker(img):
 	sy = np.sin(roty)
 	cz = np.cos(rotz)
 	sz = np.sin(rotz)
+
 	# create rotation matrix
 	roto = [
 		[cz * cy, cz * sy * sx - sz * cx],
 		[sz * cy, sz * sy * sx + cz * cx],
 		[-sy, cy * sx]
 	]
+
 	# create rotation point
 	pt = [
 		[-w/2, -h/2],
@@ -91,19 +95,25 @@ def rotate_marker(img):
 		[w/2, h/2],
 		[-w/2, h/2]	
 	]
+
 	# create output points
 	ptt = np.float32([[0, 0], [0, 0], [0, 0], [0, 0]])
+
 	# calculate output points based on rotation rotation matrix and rotation point
 	for i in range(4):
 		pz = pt[i][0] * roto[2][0] + pt[i][1] * roto[2][1]
 		ptt[i][0] = w / 2 + (pt[i][0] * roto[0][0] + pt[i][1] * roto[0][1]) * f * h / (f * h + pz)
 		ptt[i][1] = h / 2 + (pt[i][0] * roto[1][0] + pt[i][1] * roto[1][1]) * f * h / (f * h + pz)
+
 	# input points for perspective transform
 	in_pt = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
+
 	# output points for perspective transform
 	out_pt = np.float32(ptt)
+
 	# generate perspective transformation matrix
 	transform = cv2.getPerspectiveTransform(in_pt, out_pt)
+
 	# apply and return perspective transformed image
 	return cv2.warpPerspective(img, transform, (w,h), flags=cv2.INTER_CUBIC)
 
@@ -112,15 +122,20 @@ def rotate_marker(img):
 def blur_marker(img):
 	if blur_mag == 0:
 		return img
+
 	# create linear motion blur kernel
 	kernel = np.zeros((blur_mag,blur_mag), dtype="float32")
 	kernel[blur_mag / 2, :] = np.ones(blur_mag)
+
 	# normalize motion blur kernel
 	kernel /= blur_mag
+
 	# generate rotation matrix for motion blur kernel based on specified motion blur angle
 	M = cv2.getRotationMatrix2D((blur_mag / 2, blur_mag / 2), blur_angle, 1)
+
 	# generate rotated motion blur kernel
 	kernel = cv2.warpAffine(kernel, M, kernel.shape, flags=cv2.INTER_CUBIC)
+
 	# apply motion blur kernel and return motion blurred image
 	img = cv2.filter2D(img, -1, kernel)
 	return img
